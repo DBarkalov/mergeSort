@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-// быстрая сортировка
+// Р±С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
 class QSort
 {
 public:
@@ -16,7 +16,7 @@ public:
 	{	
 	}
 
-  // быстрая сортировка многопоточная
+  // Р±С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅР°СЏ
   template< class _Type>
   void StartParallelQSort(_Type *s_arr, long left,  long right)
   {	  
@@ -24,10 +24,10 @@ public:
 
      io_service.post(boost::bind(&QSort::ParallelQSort<_Type>, this, s_arr, left, right));	
 
-	 // если неправильное значение
+	 // РµСЃР»Рё РЅРµРїСЂР°РІРёР»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	 if(number_of_threads < 1) number_of_threads = 2;
 
-	 // запуск рабочих потоков
+	 // Р·Р°РїСѓСЃРє СЂР°Р±РѕС‡РёС… РїРѕС‚РѕРєРѕРІ
 	 boost::thread_group tg;
 	 for(int i=0;i<=number_of_threads;i++)
 	 {
@@ -38,7 +38,7 @@ public:
   }
 
 
-  // последовательная сортировка - оставлена для сравнения производительности
+  // РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° - РѕСЃС‚Р°РІР»РµРЅР° РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё
   template< class _Type >
   void SerialQSort(_Type *s_arr,  long left, long right)
   {	
@@ -47,14 +47,14 @@ public:
 		return;
 	}
 	 
-	// для маленьких массивов сортировка вставкой
+	// РґР»СЏ РјР°Р»РµРЅСЊРєРёС… РјР°СЃСЃРёРІРѕРІ СЃРѕСЂС‚РёСЂРѕРІРєР° РІСЃС‚Р°РІРєРѕР№
 	if ( right-left <= 20) 
 	{
         InsertionSort(s_arr, left, right);
         return;
     }	
 
-	// индекс элемента по которому разделяется массив 
+	// РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р° РїРѕ РєРѕС‚РѕСЂРѕРјСѓ СЂР°Р·РґРµР»СЏРµС‚СЃСЏ РјР°СЃСЃРёРІ 
 	long pivot = Partition(s_arr, left, right);	
 	
 	SerialQSort(s_arr, left, pivot - 1);
@@ -125,26 +125,26 @@ void ParallelQSort(_Type *s_arr,  long left,  long right)
 		return;
 	}
 
-	 // для маленьких массивов сортировка вставкой
+	 // РґР»СЏ РјР°Р»РµРЅСЊРєРёС… РјР°СЃСЃРёРІРѕРІ СЃРѕСЂС‚РёСЂРѕРІРєР° РІСЃС‚Р°РІРєРѕР№
      if ( right-left <= 20) 
 	 {
         InsertionSort(s_arr, left, right);
         return;
      }	 
 
-	// индекс элемента по которому разделяется массив 
+	// РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р° РїРѕ РєРѕС‚РѕСЂРѕРјСѓ СЂР°Р·РґРµР»СЏРµС‚СЃСЏ РјР°СЃСЃРёРІ 
 	long pivot = Partition(s_arr, left, right);
 	
-	// выполняем в новых потоках только для больших порций 
+	// РІС‹РїРѕР»РЅСЏРµРј РІ РЅРѕРІС‹С… РїРѕС‚РѕРєР°С… С‚РѕР»СЊРєРѕ РґР»СЏ Р±РѕР»СЊС€РёС… РїРѕСЂС†РёР№ 
 	if (right-left >= 20000)
 	{
-		//добавляем сообщение в очередь и назначаем обработчик		
+		//РґРѕР±Р°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РІ РѕС‡РµСЂРµРґСЊ Рё РЅР°Р·РЅР°С‡Р°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРє		
 		io_service.post(boost::bind(&QSort::ParallelQSort<_Type>, this, s_arr, left, pivot - 1));
 		io_service.post(boost::bind(&QSort::ParallelQSort<_Type>, this, s_arr, pivot + 1, right));
 
 		return;
 	}	
-	// в этом потоке
+	// РІ СЌС‚РѕРј РїРѕС‚РѕРєРµ
 	ParallelQSort<_Type>(s_arr, left, pivot - 1);
 	ParallelQSort<_Type>(s_arr, pivot + 1, right);
 }
@@ -152,6 +152,6 @@ void ParallelQSort(_Type *s_arr,  long left,  long right)
 
 private:
 	boost::asio::io_service& io_service;
-	int number_of_threads;  // число рабочих потоков в пулле
+	int number_of_threads;  // С‡РёСЃР»Рѕ СЂР°Р±РѕС‡РёС… РїРѕС‚РѕРєРѕРІ РІ РїСѓР»Р»Рµ
 };
 

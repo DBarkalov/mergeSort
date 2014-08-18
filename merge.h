@@ -3,8 +3,8 @@
 #include <boost/thread.hpp>
 
 
-// слияние двух массивов в один
-// описание многопоточного варианта в Кормен 3-е издание стр. 788
+// СЃР»РёСЏРЅРёРµ РґРІСѓС… РјР°СЃСЃРёРІРѕРІ РІ РѕРґРёРЅ
+// РѕРїРёСЃР°РЅРёРµ РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕРіРѕ РІР°СЂРёР°РЅС‚Р° РІ РљРѕСЂРјРµРЅ 3-Рµ РёР·РґР°РЅРёРµ СЃС‚СЂ. 788
 class Merge
 {
 public:
@@ -14,25 +14,25 @@ public:
 
 public:
 
-	// многопоточное слияние
+	// РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕРµ СЃР»РёСЏРЅРёРµ
   template< class _Type>
   void StartParallelMerge( _Type* t, int p1, int r1, int p2, int r2, _Type* a, int p3 )
   {	      
 	io_service.reset();
 
-	 // первое задание в очередь
+	 // РїРµСЂРІРѕРµ Р·Р°РґР°РЅРёРµ РІ РѕС‡РµСЂРµРґСЊ
     io_service.post(boost::bind(&Merge::ParallelMerge<_Type>, this, t, p1, r1, p2, r2,a, p3));
 
-	// если неправильное значение
+	// РµСЃР»Рё РЅРµРїСЂР°РІРёР»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	if(number_of_threads < 1) number_of_threads = 2;
 
-	// запуск рабочих потоков
+	// Р·Р°РїСѓСЃРє СЂР°Р±РѕС‡РёС… РїРѕС‚РѕРєРѕРІ
 	boost::thread_group tg;	
 	for(int i=0;i<=number_of_threads;i++)
 	{
 		tg.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 	}
-	// ждем завершения
+	// Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ
     tg.join_all(); 
   }
 
@@ -109,15 +109,15 @@ void ParallelMerge( _Type* t, int p1, int r1, int p2, int r2, _Type* a, int p3 )
 		return;
 	}
 
-	// для не больших массивов работа в этом потоке
+	// РґР»СЏ РЅРµ Р±РѕР»СЊС€РёС… РјР°СЃСЃРёРІРѕРІ СЂР°Р±РѕС‚Р° РІ СЌС‚РѕРј РїРѕС‚РѕРєРµ
 	if (( length1 + length2 ) <= 10000 ) 
 	{
 		SerialMerge( &t[ p1 ], &t[ p1 + length1 ], &t[ p2 ], &t[ p2 + length2 ], &a[ p3 ] );
 	}
 	else 
 	{
-		int q1 = ( p1 + r1 ) / 2;						// индекс середины первого массива
-		int q2 = binary_search( t[ q1 ], t, p2, r2 );	// во втором массиве находим индекс элемента который >= t[ q1 ]
+		int q1 = ( p1 + r1 ) / 2;						// РёРЅРґРµРєСЃ СЃРµСЂРµРґРёРЅС‹ РїРµСЂРІРѕРіРѕ РјР°СЃСЃРёРІР°
+		int q2 = binary_search( t[ q1 ], t, p2, r2 );	// РІРѕ РІС‚РѕСЂРѕРј РјР°СЃСЃРёРІРµ РЅР°С…РѕРґРёРј РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р° РєРѕС‚РѕСЂС‹Р№ >= t[ q1 ]
 		int q3 = p3 + ( q1 - p1 ) + ( q2 - p2 );		// 
 		a[ q3 ] = t[ q1 ];								//
         
@@ -128,6 +128,6 @@ void ParallelMerge( _Type* t, int p1, int r1, int p2, int r2, _Type* a, int p3 )
 
 private:
 	boost::asio::io_service& io_service;
-	int number_of_threads;  // число рабочих потоков в пулле
+	int number_of_threads;  // С‡РёСЃР»Рѕ СЂР°Р±РѕС‡РёС… РїРѕС‚РѕРєРѕРІ РІ РїСѓР»Р»Рµ
 
 };

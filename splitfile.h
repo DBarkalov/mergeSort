@@ -13,7 +13,7 @@ namespace fs = boost::filesystem;
 #include "qsort.h"
 
 
-/// разбить большой файл на отсортированные файлы
+/// СЂР°Р·Р±РёС‚СЊ Р±РѕР»СЊС€РѕР№ С„Р°Р№Р» РЅР° РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ С„Р°Р№Р»С‹
 class SplitFile
 {	
 
@@ -23,7 +23,7 @@ public:
 	}	
 
 
-	// разбить большой файл на сортированые куски
+	// СЂР°Р·Р±РёС‚СЊ Р±РѕР»СЊС€РѕР№ С„Р°Р№Р» РЅР° СЃРѕСЂС‚РёСЂРѕРІР°РЅС‹Рµ РєСѓСЃРєРё
 	template< class _Type>
 	bool SplitBigFiletoSortedFiles(std::string in_filename, std::vector<std::string> &out_files_vec, int thread_pool_size)
 	{	
@@ -32,7 +32,7 @@ public:
 		 __int64 filesize = fs::file_size(in_filename);
 
 		 
-		 // выделить память
+		 // РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ
 		 _Type *p_int = 0;
 		 try
 		 {
@@ -43,7 +43,7 @@ public:
 			return false;
 		 }
 
-   		 // буфер
+   		 // Р±СѓС„РµСЂ
 		 boost::scoped_array<_Type> saBuf (p_int);
 		 
 		 std::ifstream infile (in_filename.c_str(),std::ofstream::binary);
@@ -54,13 +54,13 @@ public:
 		 {
 			 long read_buffer_size = (filesize>=memory_buffer_size)?memory_buffer_size:filesize;
 			 			 
-			 // читать часть файла в буфер
+			 // С‡РёС‚Р°С‚СЊ С‡Р°СЃС‚СЊ С„Р°Р№Р»Р° РІ Р±СѓС„РµСЂ
 			 ReadFiletoBuffer(infile,saBuf.get(),read_buffer_size);
 			
-			 // сортировка
+			 // СЃРѕСЂС‚РёСЂРѕРІРєР°
 			 qs.StartParallelQSort<_Type>(saBuf.get(),0,(read_buffer_size/sizeof(_Type))-1);
 
-			 // записать во временный файл
+			 // Р·Р°РїРёСЃР°С‚СЊ РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ С„Р°Р№Р»
 			 std::string tmp_file_name = "temp"+boost::lexical_cast<std::string>(out_files_vec.size())+".dat";
 			 WriteTempFile(saBuf.get(),read_buffer_size,tmp_file_name);
 			 out_files_vec.push_back(tmp_file_name);
@@ -85,7 +85,7 @@ private:
 	template< class _Type>
 	void ReadFiletoBuffer(std::ifstream &infile, _Type *pInts, long buf_size)
 	{
-		// здесь можно читать блоками по 64К может быть быстрее
+		// Р·РґРµСЃСЊ РјРѕР¶РЅРѕ С‡РёС‚Р°С‚СЊ Р±Р»РѕРєР°РјРё РїРѕ 64Рљ РјРѕР¶РµС‚ Р±С‹С‚СЊ Р±С‹СЃС‚СЂРµРµ
 		infile.read((char*)pInts, buf_size);		
 		//std::cout<<"ReadFiletoBuffer  ok\n";
 	}

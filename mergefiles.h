@@ -13,7 +13,7 @@ namespace fs = boost::filesystem;
 #include "merge.h"
 
 
-/// Слияние предварительно отсортированых файлов в один
+/// РЎР»РёСЏРЅРёРµ РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅС‹С… С„Р°Р№Р»РѕРІ РІ РѕРґРёРЅ
 class MergeFiles
 {
 
@@ -22,19 +22,19 @@ public:
 	{
 	}
 
-	// слияние всех файлов в один выходной файл
+	// СЃР»РёСЏРЅРёРµ РІСЃРµС… С„Р°Р№Р»РѕРІ РІ РѕРґРёРЅ РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р»
 	template< class _Type>
 	bool MergeFilestoOne(std::vector<std::string> &in_files_vec, std::string output_file_name, int thread_pool_size)
 	{	
-		int number_of_in_files = in_files_vec.size(); // сохранено для формирования имен вр файлов
+		int number_of_in_files = in_files_vec.size(); // СЃРѕС…СЂР°РЅРµРЅРѕ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ РёРјРµРЅ РІСЂ С„Р°Р№Р»РѕРІ
 
 		while(in_files_vec.size()>=2)
 		{
-			// файлы для слияния
+			// С„Р°Р№Р»С‹ РґР»СЏ СЃР»РёСЏРЅРёСЏ
 			std::string tmp_in_file1 = *in_files_vec.begin();    
 			std::string tmp_in_file2 = *(in_files_vec.begin()+1);
 
-			// имя выходного файла
+			// РёРјСЏ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
 			std::string tmp_out_file;
 			if((in_files_vec.size()) == 2)
 			{
@@ -44,18 +44,18 @@ public:
 				tmp_out_file = "temp"+boost::lexical_cast<std::string>(number_of_in_files++)+".dat";
 			}
 
-			// слияние
+			// СЃР»РёСЏРЅРёРµ
 			if (MergeTwoFiles<_Type>(tmp_in_file1, tmp_in_file2, tmp_out_file, thread_pool_size) != 1 )
 			{ 
 				std::cout<<"error: in MergeTwoFiles\n";
 				return 0;
 			}
 
-			// удалить два файла с диска
+			// СѓРґР°Р»РёС‚СЊ РґРІР° С„Р°Р№Р»Р° СЃ РґРёСЃРєР°
 			boost::filesystem::remove(*in_files_vec.begin());
 			boost::filesystem::remove(*(in_files_vec.begin()+1));
 
-			// удалить два файла из списка
+			// СѓРґР°Р»РёС‚СЊ РґРІР° С„Р°Р№Р»Р° РёР· СЃРїРёСЃРєР°
 			in_files_vec.erase(in_files_vec.begin(),in_files_vec.begin()+2);
 
 			in_files_vec.push_back(tmp_out_file);			
@@ -66,12 +66,12 @@ public:
 	}
 
 private:
-	/// слияние двух файлов в один
+	/// СЃР»РёСЏРЅРёРµ РґРІСѓС… С„Р°Р№Р»РѕРІ РІ РѕРґРёРЅ
 	template< class _Type>
 	bool MergeTwoFiles(std::string in_file_name1, std::string in_file_name2, std::string out_file_name, int thread_pool_size)
 	{		 
 		
-		// размеры файлов
+		// СЂР°Р·РјРµСЂС‹ С„Р°Р№Р»РѕРІ
 		__int64 infile_size1 = 0;
 		__int64 infile_size2 = 0;
 
@@ -87,11 +87,11 @@ private:
 		}
 
 		
-		// буферы
+		// Р±СѓС„РµСЂС‹
 		long  InBufSize  = memory_buffer_size/2;
 		long  OutBufSize = memory_buffer_size/2;
 
-		// выделить память
+		// РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ
 		_Type *pInBuf = 0;
 		_Type *pOutBuf = 0;
 		try
@@ -114,17 +114,17 @@ private:
 		std::ifstream infile2 (in_file_name2.c_str(),std::ofstream::binary);		
 		std::ofstream outfile (out_file_name.c_str(),std::ofstream::binary);
 
-		// из каждого файла читаем максимум по memory_buffer_size/4
-		// сливаем из двух файлов
+		// РёР· РєР°Р¶РґРѕРіРѕ С„Р°Р№Р»Р° С‡РёС‚Р°РµРј РјР°РєСЃРёРјСѓРј РїРѕ memory_buffer_size/4
+		// СЃР»РёРІР°РµРј РёР· РґРІСѓС… С„Р°Р№Р»РѕРІ
 		while(infile_size1>0 && infile_size2>0)
 		{			
 			long read_buffer_size1 = (infile_size1>=InBufSize/2)?InBufSize/2:infile_size1; 
 			long read_buffer_size2 = (infile_size2>=InBufSize/2)?InBufSize/2:infile_size2;
 
-			// читать часть файла 1 в буфер
+			// С‡РёС‚Р°С‚СЊ С‡Р°СЃС‚СЊ С„Р°Р№Р»Р° 1 РІ Р±СѓС„РµСЂ
 			ReadFiletoBuffer(infile1,saInBuf.get(),read_buffer_size1);
 
-			// читать часть файла 2 в буфер
+			// С‡РёС‚Р°С‚СЊ С‡Р°СЃС‚СЊ С„Р°Р№Р»Р° 2 РІ Р±СѓС„РµСЂ
 			ReadFiletoBuffer(infile2, saInBuf.get()+read_buffer_size1/4, read_buffer_size2);  
 
 			long p1 = 0;
@@ -135,7 +135,7 @@ private:
 			// merge
 			merge.StartParallelMerge(saInBuf.get(), p1, r1, p2, r2,saOutBuf.get(),0);
 
-			// дописать pOutBuf в выходной файл
+			// РґРѕРїРёСЃР°С‚СЊ pOutBuf РІ РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р»
 			outfile.write((char*)saOutBuf.get(),(read_buffer_size1+read_buffer_size2));
 
 			infile_size1-=read_buffer_size1;
@@ -169,7 +169,7 @@ private:
 	template< class _Type>
 	void ReadFiletoBuffer(std::ifstream &infile, _Type *pInts, long buf_size)
 	{
-		// здесь можно читать блоками по 64К может быть быстрее
+		// Р·РґРµСЃСЊ РјРѕР¶РЅРѕ С‡РёС‚Р°С‚СЊ Р±Р»РѕРєР°РјРё РїРѕ 64Рљ РјРѕР¶РµС‚ Р±С‹С‚СЊ Р±С‹СЃС‚СЂРµРµ
 		infile.read((char*)pInts, buf_size);	
 	}
 
